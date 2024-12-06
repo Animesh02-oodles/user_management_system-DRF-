@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration</title>
+    <link rel="stylesheet" href="{% static 'accounts/login.css'%}"> <!-- Optional: Add your CSS file for styling -->
+</head>
+<body>
+    <div class="container">
+        <h2>User Registration</h2>
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Register</button>
+        </form>
+        <div id="error-message" style="color: red; display: none;"></div> <!-- For error messages -->
+    </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Get form values
+            const email = document.getElementById('email').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const data = {
+                email: email,
+                username: username,
+                password: password
+            };
+
+            // Make API request to register user
+            fetch('http://127.0.0.1:8000/api/accounts/register/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === 'User registered successfully!') {
+                    // Redirect to the home page after successful registration
+                    window.location.href = '/'; // Change '/' to your home page URL if needed
+                } else {
+                    // Show error message
+                    document.getElementById('error-message').innerText = 'Registration failed: ' + JSON.stringify(data);
+                    document.getElementById('error-message').style.display = 'block';
+                }
+            })
+            .catch(error => {
+                // Handle network or API errors
+                document.getElementById('error-message').innerText = 'An error occurred: ' + error;
+                document.getElementById('error-message').style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>
